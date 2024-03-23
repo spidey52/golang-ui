@@ -60,11 +60,17 @@ const apiLogsColumns: GridColDef[] = [
   width: 140,
   renderCell: (params) => {
    const value = params.value as number;
+   let val = "";
 
    if (value < 1000) {
-    return `${value} ms`;
+    val = `${value} ms`;
+   } else {
+    val = `${(value / 1000).toFixed(2)} s`;
    }
-   return `${(value / 1000).toFixed(2)} s`;
+
+   return <Typography variant='body2'>{val}</Typography>;
+
+   //  return `${(value / 1000).toFixed(2)} s`;
   },
  },
  {

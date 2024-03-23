@@ -3,7 +3,7 @@ const BASE_URL = "http://localhost:8080";
 
 const API_ENDPOINTS = {
  notifications: {
-  list: `${BASE_URL}/notifications`,
+  list: `${BASE_URL}/notification-logs`,
  },
  api_logs: {
   list: `${BASE_URL}/api-logs`,
