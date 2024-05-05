@@ -1,5 +1,6 @@
-// const BASE_URL = "http://192.168.64.2:8080";
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+console.log(BASE_URL);
 
 const API_ENDPOINTS = {
  notifications: {
@@ -7,7 +8,8 @@ const API_ENDPOINTS = {
  },
  api_logs: {
   list: `${BASE_URL}/api-logs`,
-  url_filter: `${BASE_URL}/api-urls`,
+  url_filter: `${BASE_URL}/api-logs/urls`,
+  user_filter: `${BASE_URL}/api-logs/users`,
  },
 };
 

@@ -13,6 +13,8 @@ type PaginationParams = {
  endDate?: string;
  method?: string;
  sortKey?: string;
+ userId?: string;
+ baseUrl?: string;
 };
 
 const useApiLogsList = (params: PaginationParams) => {
@@ -27,6 +29,8 @@ const useApiLogsList = (params: PaginationParams) => {
     endDate: params.endDate,
     method: params.method,
     sortKey: params.sortKey,
+    userId: params.userId,
+    baseUrl: params.baseUrl,
    },
   });
   return response.data;
@@ -74,4 +78,18 @@ const useApiUrls = () => {
  });
 };
 
-export { useApiDetails, useApiLogsList, useApiUrls };
+const useApiUsersFilter = () => {
+ const fetchApiUsers = async () => {
+  const response = await axios.get(API_ENDPOINTS.api_logs.user_filter);
+  return response.data;
+ };
+
+ return useQuery({
+  queryKey: ["apiUsers"],
+  staleTime: Infinity,
+  queryFn: fetchApiUsers,
+  select: (data) => (data.users || []) as { id: string; name: string; cp_code: string; emp_type: string }[],
+ });
+};
+
+export { useApiDetails, useApiLogsList, useApiUrls, useApiUsersFilter };

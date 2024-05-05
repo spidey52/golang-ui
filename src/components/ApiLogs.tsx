@@ -7,8 +7,9 @@ import { useMemo, useState } from "react";
 import JsonView from "react-json-view-preview";
 import { lightTheme } from "react-json-view-preview/light";
 import apiLogsColumns from "../columns/api_logs.columns";
-import { useApiDetails, useApiLogsList } from "../hooks/useApiLogs";
+import { useApiDetails, useApiLogsList, useApiUrls, useApiUsersFilter } from "../hooks/useApiLogs";
 import usePaginationHook from "../hooks/usePaginationHook";
+import AutoCompleteFilter from "./AutoCompleteFilter";
 import LoadingIndicator from "./Loading";
 import Refresh from "./Refresh";
 import SelectFilter from "./SelectFilter";
@@ -20,6 +21,8 @@ const initialState = {
  status: "",
  method: "",
  sortKey: "",
+ userId: "",
+ baseUrl: "",
 };
 
 const ApiLogsPage = () => {
@@ -28,6 +31,8 @@ const ApiLogsPage = () => {
  const { limit, setLimit, page, setPage, search, setSearch, debouncedSearch } = usePaginationHook({ limit: 20, page: 0 });
  const { data, isLoading, isRefetching, refetch } = useApiLogsList({ page, limit, search: debouncedSearch, ...filterState });
  const { data: ApiLog, isLoading: isApiLogLoading } = useApiDetails(selectedId);
+ const { data: ApiUsers } = useApiUsersFilter();
+ const { data: ApiUrls } = useApiUrls();
 
  const changeFilterState = (key: string, value: string) => {
   setFilterState((prev) => {
@@ -57,6 +62,16 @@ const ApiLogsPage = () => {
   return cols;
  }, []);
 
+ const userFilters = useMemo<{ label: string; value: string }[]>(() => {
+  if (!ApiUsers) return [];
+  return ApiUsers.map((user) => ({ label: user.name + " - " + user.cp_code, value: user.id }));
+ }, [ApiUsers]);
+
+ const urlFilters = useMemo<{ label: string; value: string }[]>(() => {
+  if (!ApiUrls) return [];
+  return ApiUrls.map((url) => ({ label: url, value: url }));
+ }, [ApiUrls]);
+
  return (
   <>
    <Dialog open={!!selectedId} onClose={() => setSelectedId(null)}>
@@ -67,6 +82,9 @@ const ApiLogsPage = () => {
     <Stack direction='row' justifyContent='space-between' alignItems='center' width='100%'>
      <Typography variant='h4'>API Logs</Typography>
      <Stack direction='row' spacing={0.5}>
+      <AutoCompleteFilter width={200} value={filterState.userId} label='User Filter' onChange={(val) => changeFilterState("userId", val)} options={userFilters} />
+      <AutoCompleteFilter width={200} value={filterState.baseUrl} label='Url Filter' onChange={(val) => changeFilterState("baseUrl", val)} options={urlFilters} />
+
       <DatePicker.RangePicker
        format={"YYYY-MM-DD"}
        value={[dayjs(filterState.startDate) || undefined, dayjs(filterState.endDate) || undefined] || undefined}
