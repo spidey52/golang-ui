@@ -1,14 +1,17 @@
-import { Dialog, DialogContent, Stack, TextField, Toolbar, Typography } from "@mui/material";
+import { Dialog, DialogContent, Stack, TextField, Typography } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { Button, DatePicker } from "antd";
 import dayjs from "dayjs";
 import moment from "moment";
 import { useMemo, useState } from "react";
 import JsonView from "react-json-view-preview";
+import { darkTheme } from "react-json-view-preview/dark";
 import { lightTheme } from "react-json-view-preview/light";
+import { useSelector } from "react-redux";
 import apiLogsColumns from "../columns/api_logs.columns";
 import { useApiDetails, useApiLogsList, useApiUrls, useApiUsersFilter } from "../hooks/useApiLogs";
 import usePaginationHook from "../hooks/usePaginationHook";
+import { RootState } from "../store/store";
 import AutoCompleteFilter from "./AutoCompleteFilter";
 import LoadingIndicator from "./Loading";
 import Refresh from "./Refresh";
@@ -72,68 +75,82 @@ const ApiLogsPage = () => {
   return ApiUrls.map((url) => ({ label: url, value: url }));
  }, [ApiUrls]);
 
+ const { mode } = useSelector((state: RootState) => state.themeReducer);
+
  return (
   <>
-   <Dialog open={!!selectedId} onClose={() => setSelectedId(null)}>
-    <DialogContent sx={{ width: 500, height: 600 }}>{isApiLogLoading ? <LoadingIndicator /> : <JsonView value={ApiLog || {}} style={lightTheme} />}</DialogContent>
+   <Dialog
+    open={!!selectedId}
+    onClose={() => setSelectedId(null)}
+    sx={{
+     "& .MuiDialog-paper": {
+      width: "80vw",
+      height: "auto",
+     },
+    }}
+   >
+    <DialogContent sx={{}}>{isApiLogLoading ? <LoadingIndicator /> : <JsonView value={ApiLog || {}} style={mode === "light" ? lightTheme : darkTheme} />}</DialogContent>
    </Dialog>
 
-   <Toolbar>
-    <Stack direction='row' justifyContent='space-between' alignItems='center' width='100%'>
-     <Typography variant='h4'>API Logs</Typography>
-     <Stack direction='row' spacing={0.5}>
-      <AutoCompleteFilter width={200} value={filterState.userId} label='User Filter' onChange={(val) => changeFilterState("userId", val)} options={userFilters} />
-      <AutoCompleteFilter width={200} value={filterState.baseUrl} label='Url Filter' onChange={(val) => changeFilterState("baseUrl", val)} options={urlFilters} />
+   <Stack
+    sx={{
+     py: 1,
+     justifyContent: "space-between",
+    }}
+   >
+    <Typography variant='h6'>API Logs</Typography>
+    <Stack direction='row' spacing={0.5}>
+     <AutoCompleteFilter width={200} value={filterState.userId} label='User Filter' onChange={(val) => changeFilterState("userId", val)} options={userFilters} />
+     <AutoCompleteFilter width={200} value={filterState.baseUrl} label='Url Filter' onChange={(val) => changeFilterState("baseUrl", val)} options={urlFilters} />
 
-      <DatePicker.RangePicker
-       format={"YYYY-MM-DD"}
-       value={[dayjs(filterState.startDate) || undefined, dayjs(filterState.endDate) || undefined] || undefined}
-       //  value={[]}
-       onChange={(_, dateStrings) => {
-        setFilterState((prev) => {
-         return {
-          ...prev,
-          startDate: dateStrings[0],
-          endDate: dateStrings[1],
-         };
-        });
-       }}
-      />
-      <SelectFilter
-       width={100}
-       label='status'
-       value={filterState.status || ""}
-       onChange={(val) => {
-        changeFilterState("status", val);
-       }}
-       options={["200", "400", "500", "304", "404", "401"]}
-      />
+     <DatePicker.RangePicker
+      format={"YYYY-MM-DD"}
+      value={[dayjs(filterState.startDate) || undefined, dayjs(filterState.endDate) || undefined] || undefined}
+      //  value={[]}
+      onChange={(_, dateStrings) => {
+       setFilterState((prev) => {
+        return {
+         ...prev,
+         startDate: dateStrings[0],
+         endDate: dateStrings[1],
+        };
+       });
+      }}
+     />
+     <SelectFilter
+      width={100}
+      label='status'
+      value={filterState.status || ""}
+      onChange={(val) => {
+       changeFilterState("status", val);
+      }}
+      options={["200", "400", "500", "304", "404", "401"]}
+     />
 
-      <SelectFilter
-       width={100}
-       label='Method'
-       value={filterState.method || ""}
-       onChange={(val) => {
-        changeFilterState("method", val);
-       }}
-       options={["GET", "POST", "PUT", "DELETE", "PATCH"]}
-      />
+     <SelectFilter
+      width={100}
+      label='Method'
+      value={filterState.method || ""}
+      onChange={(val) => {
+       changeFilterState("method", val);
+      }}
+      options={["GET", "POST", "PUT", "DELETE", "PATCH"]}
+     />
 
-      <SelectFilter
-       width={100}
-       label='Sort By'
-       value={filterState.sortKey || ""}
-       onChange={(val) => {
-        changeFilterState("sortKey", val);
-       }}
-       options={["baseUrl", "method", "status", "duration", "createdAt"]}
-      />
+     <SelectFilter
+      width={100}
+      label='Sort By'
+      value={filterState.sortKey || ""}
+      onChange={(val) => {
+       changeFilterState("sortKey", val);
+      }}
+      options={["baseUrl", "method", "status", "duration", "createdAt"]}
+     />
 
-      <TextField label='Search' variant='outlined' value={search} onChange={(e) => setSearch(e.target.value)} size='small' />
-      <Refresh onClick={refetch} isLoading={isLoading || isRefetching} />
-     </Stack>
+     <TextField label='Search' variant='outlined' value={search} onChange={(e) => setSearch(e.target.value)} size='small' />
+     <Refresh onClick={refetch} isLoading={isLoading || isRefetching} />
     </Stack>
-   </Toolbar>
+   </Stack>
    <TableData isLoading={isLoading} rows={parsedData} total={data?.count || 0} columns={columns} limit={limit} setLimit={setLimit} page={page} setPage={setPage} setSelectedId={setSelectedId} />
   </>
  );

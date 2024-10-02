@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTitle, Stack, TextField, Toolbar, Typography } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
@@ -10,13 +10,14 @@ import SelectFilter from "./SelectFilter";
 
 import JsonView from "react-json-view-preview";
 import NotificationLog from "../models/NotificationLog";
+import TemplateAutoComplete from "../utils/tempalte_autocomplete";
 import TableData from "./TableData";
 
 const initialState = {
  startDate: dayjs().startOf("day").format("YYYY-MM-DD"),
  endDate: dayjs().endOf("day").format("YYYY-MM-DD"),
  status: "",
- method: "",
+ template: "",
  sortKey: "",
 };
 
@@ -34,7 +35,7 @@ const NotificationLogs = () => {
 
  const parsedRows = useMemo(() => {
   if (data) {
-   for (const item of data.logs) item.id = item._id;
+   //  for (const item of data.logs) item.id = item.id;
    return data.logs;
   }
 
@@ -42,59 +43,81 @@ const NotificationLogs = () => {
  }, [data]);
 
  const selectedRow = useMemo(() => {
-  const row = parsedRows.find((row: NotificationLog) => row._id === selectedId);
+  const row = parsedRows.find((row: NotificationLog) => row.id === selectedId);
   if (!row) return { message: "", payload: "" };
 
   return {
-   message: JSON.parse(row.message),
-   payload: JSON.parse(row.payload),
+   message: row.message || {},
+   payload: row.payload || {},
   };
  }, [selectedId, parsedRows]);
 
  return (
   <>
-   <Dialog open={!!selectedId} onClose={() => setSelectedId(null)}>
+   <Dialog
+    open={!!selectedId}
+    onClose={() => setSelectedId(null)}
+    sx={{
+     "& .MuiDialog-paper": {
+      width: "800px",
+      height: "auto",
+     },
+    }}
+   >
     <DialogTitle></DialogTitle>
     <DialogContent sx={{ maxHeight: 600, width: 500 }}>
      <JsonView value={selectedRow} />
     </DialogContent>
    </Dialog>
 
-   <Toolbar>
-    <Stack direction='row' justifyContent='space-between' alignItems='center' width='100%'>
-     <Typography variant='h4'>API Logs</Typography>
-     <Stack direction='row' spacing={0.5}>
-      <DatePicker.RangePicker
-       format={"YYYY-MM-DD"}
-       value={[dayjs(filterState.startDate) || undefined, dayjs(filterState.endDate) || undefined] || undefined}
-       //  value={[]}
-       onChange={(_, dateStrings) => {
-        if (!dateStrings) return;
-        if (!dateStrings[0] || !dateStrings[1]) return;
-        setFilterState((prev) => {
-         return {
-          ...prev,
-          startDate: dateStrings[0],
-          endDate: dateStrings[1],
-         };
-        });
-       }}
-      />
-      <SelectFilter
-       width={100}
-       label='status'
-       value={filterState.status || ""}
-       onChange={(val) => {
-        changeFilterState("status", val);
-       }}
-       options={["SENT", "FAILED"]}
-      />
+   <Stack
+    sx={{
+     pb: 1,
+     justifyContent: "space-between",
+     alignItems: "center",
+    }}
+   >
+    <Typography variant='h6'>Message Logs</Typography>
+    <Stack direction='row' spacing={1}>
+     <DatePicker.RangePicker
+      format={"YYYY-MM-DD"}
+      value={[dayjs(filterState.startDate) || undefined, dayjs(filterState.endDate) || undefined] || undefined}
+      //  value={[]}
+      onChange={(_, dateStrings) => {
+       if (!dateStrings) return;
+       if (!dateStrings[0] || !dateStrings[1]) return;
+       setFilterState((prev) => {
+        return {
+         ...prev,
+         startDate: dateStrings[0],
+         endDate: dateStrings[1],
+        };
+       });
+      }}
+     />
 
-      <TextField label='Search' variant='outlined' value={search} onChange={(e) => setSearch(e.target.value)} size='small' />
-      <Refresh onClick={refetch} isLoading={isLoading || isRefetching} />
-     </Stack>
+     <TemplateAutoComplete
+      params={{
+       value: filterState.template,
+       onChange: (val) => changeFilterState("template", val || ""),
+       width: 200,
+      }}
+     />
+
+     <SelectFilter
+      width={100}
+      label='status'
+      value={filterState.status || ""}
+      onChange={(val) => {
+       changeFilterState("status", val);
+      }}
+      options={["SUCCESS", "FAILED"]}
+     />
+
+     <TextField label='Search' variant='outlined' value={search} onChange={(e) => setSearch(e.target.value)} size='small' />
+     <Refresh onClick={refetch} isLoading={isLoading || isRefetching} />
     </Stack>
-   </Toolbar>
+   </Stack>
 
    <TableData
     setSelectedId={(id: string) => setSelectedId(id)}

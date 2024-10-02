@@ -88,7 +88,7 @@ const useApiUsersFilter = () => {
   queryKey: ["apiUsers"],
   staleTime: Infinity,
   queryFn: fetchApiUsers,
-  select: (data) => (data.users || []) as { id: string; name: string; cp_code: string; emp_type: string }[],
+  select: (data) => (data.users || []) as { id: string; name: string; cp_code: string; emp_type: string; phone: string }[],
  });
 };
 

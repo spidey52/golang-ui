@@ -7,9 +7,9 @@ type TableDataProps = {
  limit: number;
  setLimit: (limit: number) => void;
  page: number;
- total: number;
+ total: number | undefined;
  setPage: (page: number) => void;
- setSelectedId: (id: string) => void;
+ setSelectedId?: (id: string) => void;
 };
 
 const TableData = ({ isLoading, rows, total, columns, limit, setLimit, setPage, setSelectedId }: TableDataProps) => {
@@ -28,6 +28,7 @@ const TableData = ({ isLoading, rows, total, columns, limit, setLimit, setPage, 
    }}
    isRowSelectable={() => false}
    onRowClick={(params) => {
+    if (!setSelectedId) return;
     setSelectedId(params.row.id as string);
    }}
    loading={isLoading}

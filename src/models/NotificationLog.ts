@@ -1,5 +1,5 @@
 type NotificationLog = {
- _id: string;
+ id: string;
  createdAt: string;
  payload: string;
  phone: string;

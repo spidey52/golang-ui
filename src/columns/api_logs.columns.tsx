@@ -13,7 +13,7 @@ const apiLogsColumns: GridColDef[] = [
    if (!value) return "N/A";
    return (
     <Stack direction='row' spacing={1}>
-     <Typography variant='body2' fontSize='10' color='black'>
+     <Typography variant='body2' fontSize='10'>
       {value.name}{" "}
       <Chip
        label={
