@@ -61,7 +61,15 @@ const CreateTemplate = ({ open, setOpen }: { open: boolean; setOpen: (open: bool
  const [title, setTitle] = useState<string>("");
  const [description, setDescription] = useState<string>("");
  const [name, setName] = useState<string>("");
- const [componentForm, setComponentForm] = useState<{ type: string; value: string; key: string }>({ type: "body", value: "text", key: "" });
+ const [componentForm, setComponentForm] = useState<{
+  type: string;
+  value: string;
+  key: string;
+
+  // extra options
+  subtype?: string;
+  index?: string;
+ }>({ type: "body", value: "text", key: "" });
  const [components, setComponents] = useState<{ type: string; value: string; key: string }[]>([]);
 
  const addComponent = () => {
@@ -156,8 +164,8 @@ const CreateTemplate = ({ open, setOpen }: { open: boolean; setOpen: (open: bool
  };
 
  const isFormValid = useMemo(() => {
-  return name.length > 0 && components.length > 0;
- }, [name, components]);
+  return name.length > 0;
+ }, [name]);
 
  return (
   <Dialog
@@ -165,7 +173,7 @@ const CreateTemplate = ({ open, setOpen }: { open: boolean; setOpen: (open: bool
    onClose={() => setOpen(false)}
    sx={{
     "& .MuiDialog-paper": {
-     width: "600px",
+     width: "800px",
     },
    }}
   >
@@ -189,7 +197,8 @@ const CreateTemplate = ({ open, setOpen }: { open: boolean; setOpen: (open: bool
        width={140}
        values={[
         { value: "header", label: "Header" },
-        { label: "Body", value: "body" },
+        { value: "body", label: "Body" },
+        { value: "button", label: "Button" },
        ]}
        label={"Type"}
       />
@@ -205,6 +214,27 @@ const CreateTemplate = ({ open, setOpen }: { open: boolean; setOpen: (open: bool
        ]}
        label={"value"}
       />
+      <SelectOption
+       value={componentForm.subtype || ""}
+       onChange={(val) => setComponentForm({ ...componentForm, subtype: val })}
+       width={140}
+       values={[
+        { value: "", label: "none" },
+        { value: "URL", label: "url" },
+       ]}
+       label={"subtype"}
+      />
+
+      <TextField
+       type='number'
+       label='index'
+       variant='outlined'
+       value={componentForm.index}
+       onChange={(e) => {
+        setComponentForm({ ...componentForm, index: e.target.value });
+       }}
+      />
+
       <TextField
        label='key'
        variant='outlined'
@@ -270,10 +300,24 @@ const CreateTemplate = ({ open, setOpen }: { open: boolean; setOpen: (open: bool
 };
 
 const Templates = () => {
- const { limit, setLimit, page, setPage } = usePaginationHook({});
+ const { limit, setLimit, page, setPage, search, setSearch } = usePaginationHook({ limit: 50 });
  const [open, setOpen] = useState<boolean>(false);
 
  const { data, isLoading, isRefetching, refetch } = useWhatsappTemplateList();
+
+ const rows = useMemo(() => {
+  if (!data) return [];
+  if (!data.result) return [];
+
+  return data.result
+   .filter((template) => [template.name, template.title, template.description].some((value) => value.toLowerCase().includes(search.toLowerCase())))
+   .map((template, idx) => {
+    return {
+     ...template,
+     serial: idx + 1,
+    };
+   });
+ }, [data, search]);
 
  return (
   <Box>
@@ -288,29 +332,14 @@ const Templates = () => {
      <Button variant='contained' color='primary' onClick={() => setOpen(true)}>
       Create Template
      </Button>
+
+     <TextField label='Search' variant='outlined' value={search} onChange={(e) => setSearch(e.target.value)} />
+
      <Refresh isLoading={isLoading || isRefetching} onClick={refetch} />
     </Stack>
    </Stack>
 
-   <TableData
-    columns={columns}
-    rows={
-     data?.result.map((template, idx) => {
-      return {
-       ...template,
-       id: template.id,
-       name: template.name,
-       serial: idx + 1,
-      };
-     }) || []
-    }
-    isLoading={false}
-    limit={limit}
-    setLimit={setLimit}
-    page={page}
-    setPage={setPage}
-    total={undefined}
-   />
+   <TableData columns={columns} rows={rows} paginationMode='client' isLoading={false} limit={limit} setLimit={setLimit} page={page} setPage={setPage} total={undefined} />
   </Box>
  );
 };

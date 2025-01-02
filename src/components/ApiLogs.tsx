@@ -26,6 +26,7 @@ const initialState = {
  sortKey: "",
  userId: "",
  baseUrl: "",
+ server: "",
 };
 
 const ApiLogsPage = () => {
@@ -105,7 +106,7 @@ const ApiLogsPage = () => {
 
      <DatePicker.RangePicker
       format={"YYYY-MM-DD"}
-      value={[dayjs(filterState.startDate) || undefined, dayjs(filterState.endDate) || undefined] || undefined}
+      defaultValue={[dayjs(filterState.startDate), dayjs(filterState.endDate)]}
       //  value={[]}
       onChange={(_, dateStrings) => {
        setFilterState((prev) => {
@@ -117,6 +118,7 @@ const ApiLogsPage = () => {
        });
       }}
      />
+     <SelectFilter width={100} label='server' value={filterState.server || ""} onChange={(val) => changeFilterState("server", val)} options={["Magadh", "Chat-Server"]} />
      <SelectFilter
       width={100}
       label='status'

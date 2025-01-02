@@ -1,0 +1,13 @@
+ a {
+ 	text-decoration: none;
+ 	/* Deep Sky Blue */
+ 	background-color: transparent;
+ 	padding: 5px 15px;
+ 	transition: all 0.3s ease;
+ }
+
+ a:hover,
+ a:active {
+ 	background-color: rgba(0, 206, 209, 0.091);
+ 	border-radius: 5px;
+ }

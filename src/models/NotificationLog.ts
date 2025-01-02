@@ -3,7 +3,7 @@ type NotificationLog = {
  createdAt: string;
  payload: string;
  phone: string;
- status: "SENT" | "FAILED";
+ status: "SUCCESS" | "FAILED";
  template: string;
 };
 

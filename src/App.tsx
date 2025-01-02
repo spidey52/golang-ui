@@ -1,12 +1,13 @@
-import { Brightness4, Brightness7, Dashboard } from "@mui/icons-material";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
 import { AppBar, Box, createTheme, CssBaseline, IconButton, Paper, Stack, ThemeProvider, Toolbar } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BrowserRouter, Link, Route, Routes, useOutlet } from "react-router-dom";
+import { BrowserRouter, NavLink, Route, Routes, useOutlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ApiLogsPage from "./components/ApiLogs";
+import HomePage from "./components/Home";
 import NotificationLogs from "./components/NotificationLogs";
 import Templates from "./pages/templates";
 import { toggleTheme } from "./store/slices/theme.slice";
@@ -53,7 +54,8 @@ const MainLayout = () => {
         link: "/templates",
        },
       ].map((item) => (
-       <Link
+       <NavLink
+        className={({ isActive }) => (isActive ? "active-link" : "my-link")}
         to={item.link}
         key={item.title}
         style={{
@@ -62,7 +64,7 @@ const MainLayout = () => {
         }}
        >
         {item.title}
-       </Link>
+       </NavLink>
       ))}
      </Stack>
 
@@ -135,7 +137,7 @@ function App() {
     <BrowserRouter>
      <Routes>
       <Route path='/' element={<MainLayout />}>
-       <Route path='/' element={<Dashboard />} />
+       <Route path='/' element={<HomePage />} />
        <Route path='/api-logs' element={<ApiLogsPage />} />
        <Route path='/notification-logs' element={<NotificationLogs />} />
        <Route path='/templates' element={<Templates />} />

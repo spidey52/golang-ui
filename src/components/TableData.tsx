@@ -10,9 +10,10 @@ type TableDataProps = {
  total: number | undefined;
  setPage: (page: number) => void;
  setSelectedId?: (id: string) => void;
+ paginationMode?: "client" | "server";
 };
 
-const TableData = ({ isLoading, rows, total, columns, limit, setLimit, setPage, setSelectedId }: TableDataProps) => {
+const TableData = ({ isLoading, rows, paginationMode, total, columns, limit, setLimit, setPage, setSelectedId }: TableDataProps) => {
  return (
   <DataGrid
    sx={{
@@ -33,7 +34,7 @@ const TableData = ({ isLoading, rows, total, columns, limit, setLimit, setPage, 
    }}
    loading={isLoading}
    pagination={true}
-   paginationMode='server'
+   paginationMode={paginationMode || "server"}
    rowCount={total}
    onPaginationModelChange={(params) => {
     console.log(params);

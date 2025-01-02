@@ -49,6 +49,7 @@ const NotificationLogs = () => {
   return {
    message: row.message || {},
    payload: row.payload || {},
+   body: row.body || {},
   };
  }, [selectedId, parsedRows]);
 
@@ -65,7 +66,7 @@ const NotificationLogs = () => {
     }}
    >
     <DialogTitle></DialogTitle>
-    <DialogContent sx={{ maxHeight: 600, width: 500 }}>
+    <DialogContent sx={{ maxHeight: 600 }}>
      <JsonView value={selectedRow} />
     </DialogContent>
    </Dialog>
@@ -81,8 +82,8 @@ const NotificationLogs = () => {
     <Stack direction='row' spacing={1}>
      <DatePicker.RangePicker
       format={"YYYY-MM-DD"}
-      value={[dayjs(filterState.startDate) || undefined, dayjs(filterState.endDate) || undefined] || undefined}
-      //  value={[]}
+      // value={[dayjs(filterState.startDate) || undefined, dayjs(filterState.endDate) || undefined] || undefined}
+      value={[dayjs(filterState.startDate), dayjs(filterState.endDate)]}
       onChange={(_, dateStrings) => {
        if (!dateStrings) return;
        if (!dateStrings[0] || !dateStrings[1]) return;

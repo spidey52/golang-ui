@@ -1,5 +1,6 @@
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const WHATSAPP_BASE_URL = import.meta.env.VITE_WHATSAPP_BASE_URL || "http://localhost:8081";
+const SERVER_MANAGEMENT_BASE_URL = import.meta.env.VITE_SERVER_MANAGEMENT_BASE_URL || "http://localhost:8082";
 
 const API_ENDPOINTS = {
  notifications: {
@@ -17,6 +18,10 @@ const API_ENDPOINTS = {
   update: `${WHATSAPP_BASE_URL}/templates`,
   delete: `${WHATSAPP_BASE_URL}/templates`,
   send_message: `${WHATSAPP_BASE_URL}/templates/send-message`,
+ },
+
+ metrics: {
+  socket: `${SERVER_MANAGEMENT_BASE_URL}/metrics`,
  },
 };
 
