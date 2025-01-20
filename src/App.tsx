@@ -10,6 +10,7 @@ import ApiLogsPage from "./components/ApiLogs";
 import HomePage from "./components/Home";
 import NotificationLogs from "./components/NotificationLogs";
 import Templates from "./pages/templates";
+import UiDeploy from "./pages/ui_deploy";
 import { toggleTheme } from "./store/slices/theme.slice";
 import { RootState } from "./store/store";
 
@@ -52,6 +53,11 @@ const MainLayout = () => {
        {
         title: "Templates",
         link: "/templates",
+       },
+
+       {
+        title: "UI Deploy",
+        link: "/ui-deploy",
        },
       ].map((item) => (
        <NavLink
@@ -141,6 +147,7 @@ function App() {
        <Route path='/api-logs' element={<ApiLogsPage />} />
        <Route path='/notification-logs' element={<NotificationLogs />} />
        <Route path='/templates' element={<Templates />} />
+       <Route path='/ui-deploy' element={<UiDeploy />} />
        <Route path='*' element={<div>404</div>} />
       </Route>
      </Routes>
